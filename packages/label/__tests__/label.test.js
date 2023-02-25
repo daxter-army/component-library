@@ -1,6 +1,6 @@
 'use strict';
 
-const label = require('..');
+const label = require('../lib/Label');
 const assert = require('assert').strict;
 
 assert.strictEqual(label(), 'Hello from label');

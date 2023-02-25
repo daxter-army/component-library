@@ -61,11 +61,14 @@ async function packageDirLoader() {
 
 //* Function to check whether the mentioned package exists or not
 async function checkDirORFileExists(dirORFilePath, throwOnError = true) {
+	// console.log("DIR PATH: ", dirORFilePath, "THROW: ", throwOnError)
 	if (!!(await asyncStat(dirORFilePath).catch(e => {
 		if (throwOnError) {
 			console.log(colors.bold.red("Error at checkDirORFileExists() while reading:"), dirORFilePath);
 			console.log(colors.bold.red("Error message:"), e)
 		}
+
+		return false
 	}))) return [dirORFilePath]
 
 	//* Throw error when required only, not everytime
@@ -109,28 +112,34 @@ const createFinalBundle = async (inputOptions, outputOptions) => {
 const repositionTypeFiles = async (packageEntryPointFileName, targetDir) => {
 	//* Source lib directory, where to pick type files from
 	const sourceLibDir = path.join(targetDir, 'lib')
-	//* Converts package name to its Props file name, i.e package-name -> Package-name.d.ts  
+
+	//* Converts package name to its Props file name, i.e package-name -> Package-name.d.ts
+	//*	because dist/lib/ contains in this format 
 	const mainPropFileName = `${packageEntryPointFileName.charAt(0).toUpperCase() + packageEntryPointFileName.slice(1)}.d.ts`
 
 	//* Files to copy type definitions from,
 	//* Not including d.ts in the final index.d.ts
-	const sourceArrDirs = [path.join(sourceLibDir, mainPropFileName), path.join(sourceLibDir, 'Props.d.ts')]
+	//* Not checking for Props.ts in the final index
+	let sourceArrDirs = [path.join(sourceLibDir, mainPropFileName), path.join(sourceLibDir, 'Props.d.ts')]
 
 	//* Check if all the file exists priorily
 	for (const targetFile of sourceArrDirs) {
-		await checkDirORFileExists(targetFile)
+		//* Remove files which do not exists, or not obtained after the bundling
+		if (!(await checkDirORFileExists(targetFile, false))) {
+			sourceArrDirs.splice(sourceArrDirs.indexOf(targetFile), 1)
+		}
 	}
 
 	//* Target directory to copy all the type definitions at
 	const targetPropFileDir = path.join(targetDir, 'index.d.ts')
 
-	//* Reading every file and wrtiting the content to dist/index.d.ts
+	// //* Reading every file and wrtiting the content to dist/index.d.ts
 	for await (const fileContent of readFileGenerator(sourceArrDirs)) {
 		await asyncAppendFile(targetPropFileDir, fileContent, 'utf8')
 	}
 
-	//* Then delete the source lib directory
-	return asyncRm(sourceLibDir, { recursive: true })
+	// //* Then delete the source lib directory
+	asyncRm(sourceLibDir, { recursive: true })
 }
 
 //* Main driver function
@@ -238,3 +247,6 @@ async function main() {
 
 // Calling main driver function
 tryCatcher(main)
+// (async function () {
+// 	await checkDirORFileExists(path.join(__dirname, 'test.txt'), false)
+// })()

@@ -1,4 +1,4 @@
-## React + Typescript + Lerna + Rollup Component Library
+# React + Typescript + Lerna + Rollup Component Library
 
 * All the packages maintained by lerna are placed in `packages` dir.
 * The main file is `builder.js` here, which is responsible for bundling all the packages into CJS and ESM modules.
@@ -14,6 +14,7 @@
 ### Things to remember while creating a package
 * After creating package with the `lerna create` command, you need to take care of few things in the `package.json`, so that the bundling process completes without any error. 
 	1. Change the name of the entry file with the camelCase convention. If you created a package like this:
+	
 	````js
 		lerna create @your-org/button --yes
 		// rename button.js to --> Button.tsx
@@ -23,6 +24,7 @@
 	````
 
 	2. Edit the `src` field in the respective `package.json`, with the new name of the entry file
+	
 	````js
 			// change this
 			{																					
@@ -40,6 +42,7 @@
 	````
 
 	3. Add fields for `main` & `module` to make an entry point for `cjs` and `es module` for your package.
+	
 	````js
 			// add these fields in your respective `package.json`
 			{																					
@@ -51,6 +54,7 @@
 	````
 
 	4. Add fields for `types` & `module` for your package.
+	
 	````js
 			{																					
 				... other values												
@@ -59,7 +63,25 @@
 			}	
 	````
 
-	5. Now you are ready for bundling your package, prepare for launch 🚀 ;). But if you still have any confusion then you can check the `package.json` of the button component, placed under `packages`.
+	5. Add `dist` to `files`
+
+	```js
+			// change this
+			{																					
+				... other values
+				files: ['lib'],
+				... other values
+			}																					
+
+			// to this
+			{																					
+				... other values												
+				files: ['dist', 'lib'],
+				... other values												
+			}
+		```
+
+	6. Now you are ready for bundling your package, prepare for launch 🚀 ;). But if you still have any confusion then you can check the `package.json` of the `button` component, placed under `packages`.
 
 ### Bundling process
 * To bundle your package individually, run `node builder.js -p {package-name}`

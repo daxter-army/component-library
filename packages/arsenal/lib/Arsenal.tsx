@@ -1,7 +1,7 @@
-import React from "react"
+import Button from "@daxter-army/button"
+// More imports
 
-const Arsenal = () => {
-  return <div>From Arsenal</div>
+// More exports
+export {
+  Button
 }
-
-export default Arsenal
