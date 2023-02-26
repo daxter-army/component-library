@@ -128,6 +128,23 @@ const repositionTypeFiles = async (targetDir) => {
 	asyncRm(sourceLibDir, { recursive: true })
 }
 
+//* Function to check if there is previously built dist files,
+//* If there is, then first remove and the create a fresh dist 
+const isOldArtifactExists = async (packageName, packageDistDir) => {
+	//* Remove any dist folder if there is, in the package, before building
+	//* return false, not throw error, if the file/dir to delete do not exists
+	if (await checkDirORFileExists(packageDistDir, false)) {
+		//* dist exists
+		console.log(colors.yellow(`Found old ${path.join(packageName, 'dist')} 🧳`))
+		await asyncRm(packageDistDir, { recursive: true }).then(() => {
+			console.log(colors.yellow(`Cleaned old ${path.join(packageName, 'dist')} 🧹`))
+		}).catch((e) => {
+			console.log(colors.yellow("Failed to remove old dist located at:"), packageDistDir)
+			console.log(colors.red("Error :"), e)
+		})
+	}
+}
+
 //* Main driver function
 async function main() {
 	try {
@@ -142,7 +159,6 @@ async function main() {
 			const packageDir = path.join(PACKAGES_DIR, packageName)
 			const packageDistDir = path.join(packageDir, 'dist')
 			const packageEntryPointDir = path.join(packageDir, packageJSON.src)
-			const packageEntryPointFileName = packageJSON.src.split("/")[1].split(".")[0]
 			const packageCJSName = packageJSON.main.replace('dist/', '')
 			const packageESMName = packageJSON.module.replace('dist/', '')
 			const packageTypesName = packageJSON.types
@@ -156,18 +172,9 @@ async function main() {
 			console.log(colors.blue("Package types entry file path:"), packageJSON.types)
 			console.log(colors.blue("Package version:"), packageJSON.version)
 
-			//* Remove any dist folder if there is, in the package, before building
-			//* return false, not throw error, if the file/dir to delete do not exists
-			if (await checkDirORFileExists(packageDistDir, false)) {
-				//* dist exists
-				console.log(colors.yellow(`Found old ${path.join(packageName, 'dist')} 🧳`))
-				await asyncRm(packageDistDir, { recursive: true }).then(() => {
-					console.log(colors.yellow(`Cleaned old ${path.join(packageName, 'dist')} 🧹`))
-				}).catch((e) => {
-					console.log(colors.yellow("Failed to remove old dist located at:"), packageDistDir)
-					console.log(colors.red("Error :"), e)
-				})
-			}
+			//* Function to check if there is previously built dist files,
+			//* If there is, then first remove and the create a fresh dist 
+			await isOldArtifactExists(packageName, packageDistDir)
 
 			//* Rollup input options
 			const ROLLUP_INPUT_OPTIONS = {
@@ -221,6 +228,7 @@ async function main() {
 			console.log(colors.bold.green(`Created CJS & ESM modules for ${packageJSON.name} at ${path.join(packageName, 'dist', packageCJSName)} & ${path.join(packageName, 'dist', packageESMName)} 💯`))
 
 			//* Copy the different types from the files into one single index.d.ts file
+			//~ Not necessay, but a check if dist exists 
 			await checkDirORFileExists(packageDistDir)
 			await repositionTypeFiles(packageDistDir)
 			console.log(colors.bold.green(`Created Type declarations for ${packageJSON.name} at ${path.join(packageName, packageTypesName)} 🍒`))
@@ -233,6 +241,3 @@ async function main() {
 
 // Calling main driver function
 tryCatcher(main)
-// (async function () {
-// 	await checkDirORFileExists(path.join(__dirname, 'test.txt'), false)
-// })()
