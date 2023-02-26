@@ -54,9 +54,9 @@ function* readFileGenerator(dirsArr, fileSuffix = '') {
 }
 
 //* Function to go in pacakges and retrieve package entry points
-async function packageDirLoader() {
-	const packages = await tryCatcher(() => asyncReadDir(PACKAGES_DIR))
-	return packages.map(item => path.join(PACKAGES_DIR, item))
+async function dirContentLoader(targetDir) {
+	const packages = await tryCatcher(() => asyncReadDir(targetDir))
+	return packages.map(item => path.join(targetDir, item))
 }
 
 //* Function to check whether the mentioned package exists or not
@@ -91,7 +91,7 @@ const getPackageDirectory = () => {
 
 	//* Bundle for all packages 
 	if (argsArr[1] === "all") {
-		return tryCatcher(packageDirLoader)
+		return tryCatcher(() => dirContentLoader(PACKAGES_DIR))
 	}
 	//* Bundle for the specified package only 
 	else {
@@ -109,32 +109,18 @@ const createFinalBundle = async (inputOptions, outputOptions) => {
 }
 
 //* Function to relocate types files from 'lib/' to 'dist/', moving up one dir up
-const repositionTypeFiles = async (packageEntryPointFileName, targetDir) => {
+const repositionTypeFiles = async (targetDir) => {
 	//* Source lib directory, where to pick type files from
 	const sourceLibDir = path.join(targetDir, 'lib')
 
-	//* Converts package name to its Props file name, i.e package-name -> Package-name.d.ts
-	//*	because dist/lib/ contains in this format 
-	const mainPropFileName = `${packageEntryPointFileName.charAt(0).toUpperCase() + packageEntryPointFileName.slice(1)}.d.ts`
-
-	//* Files to copy type definitions from,
-	//* Not including d.ts in the final index.d.ts
-	//* Not checking for Props.ts in the final index
-	let sourceArrDirs = [path.join(sourceLibDir, mainPropFileName), path.join(sourceLibDir, 'Props.d.ts')]
-
-	//* Check if all the file exists priorily
-	for (const targetFile of sourceArrDirs) {
-		//* Remove files which do not exists, or not obtained after the bundling
-		if (!(await checkDirORFileExists(targetFile, false))) {
-			sourceArrDirs.splice(sourceArrDirs.indexOf(targetFile), 1)
-		}
-	}
+	//* Get All the conents in the targetDir
+	const dirTypeFiles = await dirContentLoader(sourceLibDir)
 
 	//* Target directory to copy all the type definitions at
 	const targetPropFileDir = path.join(targetDir, 'index.d.ts')
 
 	// //* Reading every file and wrtiting the content to dist/index.d.ts
-	for await (const fileContent of readFileGenerator(sourceArrDirs)) {
+	for await (const fileContent of readFileGenerator(dirTypeFiles)) {
 		await asyncAppendFile(targetPropFileDir, fileContent, 'utf8')
 	}
 
@@ -236,7 +222,7 @@ async function main() {
 
 			//* Copy the different types from the files into one single index.d.ts file
 			await checkDirORFileExists(packageDistDir)
-			await repositionTypeFiles(packageEntryPointFileName, packageDistDir)
+			await repositionTypeFiles(packageDistDir)
 			console.log(colors.bold.green(`Created Type declarations for ${packageJSON.name} at ${path.join(packageName, packageTypesName)} 🍒`))
 		}
 	}
