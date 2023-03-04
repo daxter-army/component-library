@@ -16,15 +16,15 @@
 		"module": "ESNext",
 		"declaration": true,
 		"declarationDir": "./",
-		"sourceMap": true,
+		"sourceMap": false,
 		"outDir": ".",
 		"rootDir": ".",
 		"moduleResolution": "node",
 		"allowSyntheticDefaultImports": true,
-		"emitDeclarationOnly": true,
+		// "emitDeclarationOnly": true,
 	},
 	"exclude": [
 		"node_modules",
-		"dist"
+		// "dist"
 	]
 }

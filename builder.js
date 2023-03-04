@@ -203,9 +203,9 @@ async function main() {
 					commonjs(),
 					// TS RESOLVER
 					// If you change rootDir, then there can be consequences in repositionTypeFiles()
-					typescript({ tsconfig: "./tsconfig.json", rootDir: packageDir }),
+					typescript({ tsconfig: "./tsconfig.json", rootDir: packageDir, sourceMap: true }),
 					// MINIFIER
-					terser(),
+					// terser(),
 				]
 			}
 
@@ -229,9 +229,10 @@ async function main() {
 
 			//* Copy the different types from the files into one single index.d.ts file
 			//~ Not necessay, but a check if dist exists 
-			await checkDirORFileExists(packageDistDir)
-			await repositionTypeFiles(packageDistDir)
-			console.log(colors.bold.green(`Created Type declarations for ${packageJSON.name} at ${path.join(packageName, packageTypesName)} 🍒`))
+			// await checkDirORFileExists(packageDistDir)
+			// await repositionTypeFiles(packageDistDir)
+			// Is not an appropriate operation to do
+			// console.log(colors.bold.green(`Created Type declarations for ${packageJSON.name} at ${path.join(packageName, packageTypesName)} 🍒`))
 		}
 	}
 	catch (e) {
