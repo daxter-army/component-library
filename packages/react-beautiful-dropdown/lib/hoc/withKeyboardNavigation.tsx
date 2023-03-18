@@ -1,41 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react'
+import { optionItemProps } from '../Props';
 
 import { valueMatcher } from '../utils';
 
-import { optionItemProps } from '../Props';
-
-// Props being supplied to the component from HOC
-export interface InjectedInputProps {
-	isActive: boolean;
-	prevValue: string;
-	activeIndex: number;
-	focusIndex: boolean;
-	isMouseHoverAllowed: boolean;
-	inputRef: React.RefObject<HTMLInputElement>;
-	onKeyDownHandler: (e: KeyboardEvent) => void;
-	optionsRef: React.RefObject<HTMLUListElement>;
-	isActiveHandler: React.Dispatch<React.SetStateAction<boolean>>;
-	onClickItemHandler: (item: optionItemProps, idx: number) => void;
-	isMouseHoverAllowedHandler: React.Dispatch<React.SetStateAction<boolean>>;
-	optionItemsRef: React.MutableRefObject<React.MutableRefObject<HTMLLIElement>[]>;
-	focusIndexHandler: React.Dispatch<React.SetStateAction<number>>;
-}
-
-// Props getting getting from the parent component
-export interface ReceivedInputProps {
-	value: string;
-	placeholder: string;
-	error?: {
-		isError: boolean;
-		errorText: string;
-	};
-	options: optionItemProps[];
-	valueHandler: (val: string) => void;
-	validator?: (val: string) => boolean;
-	customInputStyles?: React.CSSProperties;
-	customDropdownStyles?: React.CSSProperties;
-	customDropdownItemStyles?: React.CSSProperties;
-}
+import { InjectedInputProps, ReceivedInputProps } from './Props';
 
 // Hoc wrapper function
 function withKeyboardNavigation<P extends ReceivedInputProps>(WrappedComponent: React.ComponentType<P>) {
@@ -62,7 +30,7 @@ function withKeyboardNavigation<P extends ReceivedInputProps>(WrappedComponent: 
 		// Scroll to given index
 		const scrollToSelectedIndex = (i: number) => {
 			if (!optionsRef.current || !optionItemsRef.current) return
-			console.log("Scrolling to index: ", i)
+			// console.log("Scrolling to index: ", i)
 			optionsRef.current?.scrollTo(0, optionItemsRef.current[i]?.current?.offsetTop)
 		}
 
@@ -201,9 +169,9 @@ function withKeyboardNavigation<P extends ReceivedInputProps>(WrappedComponent: 
 			optionsRef={optionsRef}
 			focusIndex={focusIndex}
 			activeIndex={activeIndex}
-			focusIndexHandler={setFocusIndex}
 			isActiveHandler={setIsActive}
 			optionItemsRef={optionItemsRef}
+			focusIndexHandler={setFocusIndex}
 			prevValue={cachedValueRef.current}
 			onKeyDownHandler={onKeyDownHandler}
 			onClickItemHandler={onClickItemHandler}

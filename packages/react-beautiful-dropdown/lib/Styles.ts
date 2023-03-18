@@ -21,7 +21,7 @@ const Input = styled.input<InputItemProps>`
 
 const InputWpr = styled.div`
 	position: relative;
-	width: 400px;
+	/* width: 400px; */
 `
 
 const InputCtr = styled.div`

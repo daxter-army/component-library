@@ -1,12 +1,11 @@
-import React, { createRef } from 'react'
+import React, { createRef, forwardRef } from 'react'
 
 import S from "./Styles";
 
 import DropdownProps from "./Props"
 
-const Dropdown = ({
+const Dropdown = forwardRef<HTMLUListElement, DropdownProps>(({
 	list,
-	optionsRef,
 	focusIndex,
 	activeIndex,
 	optionItemsRef,
@@ -16,7 +15,7 @@ const Dropdown = ({
 	customDropdownStyles,
 	customDropdownItemStyles,
 	isMouseHoverAllowedHandler,
-}: DropdownProps) => {
+}, ref) => {
 
 	// Creating refs and assigning it to the elements
 	const itemRefHandler = () => {
@@ -47,7 +46,7 @@ const Dropdown = ({
 
 	return (
 		<S.Dropdown
-			ref={optionsRef}
+			ref={ref}
 			style={customDropdownStyles}
 			onClick={onClickDropdownHandler}
 			onMouseMove={onDropdownMouseMoveHandler}
@@ -55,6 +54,7 @@ const Dropdown = ({
 		>
 			{
 				list.map((item, i) => {
+					// Creating refs for every element
 					itemRefHandler()
 
 					return <S.DropdownItem
@@ -73,6 +73,6 @@ const Dropdown = ({
 			}
 		</S.Dropdown>
 	)
-}
+})
 
 export default Dropdown

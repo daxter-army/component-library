@@ -5,7 +5,6 @@ export default interface DropdownProps {
 	activeIndex: number;
 	list: optionItemProps[];
 	isMouseHoverAllowed: boolean;
-	optionsRef: React.RefObject<HTMLUListElement>;
 	onClickItemHandler: (item: optionItemProps, i: number) => void;
 	focusIndexHandler: React.Dispatch<React.SetStateAction<number>>;
 	optionItemsRef: React.MutableRefObject<React.RefObject<HTMLLIElement>[]>;

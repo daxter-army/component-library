@@ -35,6 +35,7 @@ const DropdownItem = styled.li<DropdownItemProps>`
 	padding: 12px 8px;
 	font-size: 14px;
 	line-height: 16px;
+	background-color: white;
 	${props => props.isMouseOn ? `pointer-events: auto;` : `pointer-events: none;`}
 	${props => props.isFocus && `background-color: #badc58; color: #4a4a4a; font-weight: 900;`}
 	${props => props.isActive && `background-color: #6ab04c; color: white; font-weight: 900;`}
