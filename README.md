@@ -58,7 +58,7 @@
 	```js
 		{																					
 			... other values												
-			types: dist/index.d.ts
+			types: dist/lib/{entry_point_file_name}.d.ts
 			... other values												
 		}	
 	```
