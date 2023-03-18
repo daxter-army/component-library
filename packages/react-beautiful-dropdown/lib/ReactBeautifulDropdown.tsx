@@ -11,8 +11,8 @@ import S from './Styles'
 import InputProps from './Props'
 
 const Input: React.FC<InputProps> = ({
-	value,
-	error,
+	value = "Sample value",
+	error = { isError: false, errorText: "" },
 	options,
 	inputRef,
 	isActive,
@@ -20,7 +20,7 @@ const Input: React.FC<InputProps> = ({
 	optionsRef,
 	focusIndex,
 	activeIndex,
-	valueHandler,
+	valueHandler = (val) => { console.log("Value:", val, "\n", "Pass custom valueHandler() to get latest value back to you") },
 	optionItemsRef,
 	isActiveHandler,
 	onKeyDownHandler,
@@ -37,8 +37,8 @@ const Input: React.FC<InputProps> = ({
 	const dropdownRef = useRef([inputRef, optionsRef])
 	useOutsideClick(dropdownRef, () => {
 		if (isActive) {
-			console.log("RUNNING")
-			valueHandler(prevValue)
+			if (activeIndex !== focusIndex) valueHandler(prevValue)
+			isActiveHandler(false)
 			isActiveHandler(false)
 			inputRef.current?.blur()
 		}

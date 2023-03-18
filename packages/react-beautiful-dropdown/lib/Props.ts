@@ -7,7 +7,7 @@ export interface optionItemProps {
 
 export default interface InputProps {
 	placeholder: string;
-	error: {
+	error?: {
 		isError: boolean;
 		errorText: string;
 	};
