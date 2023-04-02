@@ -81,9 +81,10 @@ async function checkDirORFileExists(dirORFilePath, throwOnError = true) {
 }
 
 //* Function to return array of package dirs
+//* Command example: node lib-builder.js -p {package_name} OR node lib-builder.js -p all
 const getPackageDirectory = () => {
 	if (process.argv.length < 2 || process.argv.length > 4) {
-		throw new Error("Invalid arguments!\nCommand format: node builder.js -p {package-name | all}")
+		throw new Error("Invalid arguments!\nCommand format: node builder.js -p {package_name} OR node builder.js -p all")
 	}
 
 	const argsArr = process.argv.slice(2)
@@ -108,6 +109,7 @@ const createFinalBundle = async (inputOptions, outputOptions) => {
 	}
 }
 
+//! Not being used for now
 //* Function to relocate types files from 'lib/' to 'dist/', moving up one dir up
 const repositionTypeFiles = async (targetDir) => {
 	//* Source lib directory, where to pick type files from
@@ -161,7 +163,7 @@ async function main() {
 			const packageEntryPointDir = path.join(packageDir, packageJSON.src)
 			const packageCJSName = packageJSON.main.replace('dist/', '')
 			const packageESMName = packageJSON.module.replace('dist/', '')
-			const packageTypesName = packageJSON.types
+			// const packageTypesName = packageJSON.types
 
 			//* Print metadata
 			console.log(colors.blue("Package name:"), packageJSON.name)
@@ -240,5 +242,5 @@ async function main() {
 	}
 }
 
-// Calling main driver function
+//* Calling main driver function
 tryCatcher(main)
